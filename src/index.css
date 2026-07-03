@@ -59,7 +59,7 @@ body {
   display: flex;
   justify-content: center;
   padding-top: 2rem;
-  padding-inline: 1rem;
+  padding-inline: 0.5rem;
 
   background-image: url("./assets/images/background-mobile.png");
   background-size: cover;
