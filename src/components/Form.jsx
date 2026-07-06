@@ -2,19 +2,12 @@ import { useRef, useState } from "react";
 import GenerateButton from "./GenerateButton";
 import logo from "../assets/images/logo-full.svg";
 import { IoIosInformationCircleOutline } from "react-icons/io";
-import iconUpload from "../assets/images/icon-upload.svg"
+import iconUpload from "../assets/images/icon-upload.svg";
+import useObjectUrl from "../hooks/UseObjectUrl";
 
-function Form({
-  name,
-  setName,
-  email,
-  setEmail,
-  git,
-  setGit,
-  image,
-  setImage,
-  handleState,
-}) {
+function Form({ formData, setFormData, handleState }) {
+  const { name, email, git, image } = formData;
+
   const [isDragging, setIsDragging] = useState(false);
 
   const [submitted, setSubmitted] = useState(false);
@@ -22,7 +15,6 @@ function Form({
   const handleSubmit = (e) => {
     e.preventDefault();
     setSubmitted(true);
-    if (!name || !email || !git) return;
     if (!isEmailValid) {
       return;
     }
@@ -44,18 +36,28 @@ function Form({
       return;
     }
     setImageError("");
-    setImage(file);
+    setFormData((prev) => ({ ...prev, image: file }));
   };
 
-  const removeImage = ()=>{
-    setImage(null);
-  }
+  const removeImage = () => {
+    setFormData((prev) => ({ ...prev, image: null }));
+  };
 
   const fileInputRef = useRef(null);
 
-  const imageUrl = image ? URL.createObjectURL(image) : null;
+  const imageUrl = useObjectUrl(image);
 
   const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const inputClass =
+    "w-full text-lg bg-neutral-700/20 border border-neutral-500 rounded-lg px-4 py-3 text-neutral-0 placeholder-neutral-500 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-neutral-500 focus:ring-offset-neutral-500 transition-colors";
+
+  const handleChange = (e) => {
+    const { name: field, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [field]: field === "git" ? value.replace(/^@+/, "") : value,
+    }));
+  };
 
   return (
     <div className="flex flex-col items-center w-full">
@@ -71,7 +73,10 @@ function Form({
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="min-w-[345px] mt-8 sm:mt-10 space-y-6 md:min-w-[460px]">
+        <form
+          onSubmit={handleSubmit}
+          className="min-w-[345px] mt-8 sm:mt-10 space-y-6 md:min-w-[460px]"
+        >
           <div>
             <label className="block text-xl mb-2">Upload Avatar</label>
 
@@ -103,12 +108,26 @@ function Form({
                 </div>
               )}
               <p className="text-neutral-300 text-lg text-center">
-                {image
-                  ? <span className="flex gap-2">
-                    <button type="button" className="hover:underline py-1 px-2 rounded hover:bg-neutral-700/20" onClick={removeImage}>Remove Image</button>
-                    <button type="button" className="hover:underline py-1 px-2 rounded hover:bg-neutral-700/20" onClick={() => fileInputRef.current?.click()}>Change Image</button>
+                {image ? (
+                  <span className="flex gap-2">
+                    <button
+                      type="button"
+                      className="hover:underline py-1 px-2 rounded hover:bg-neutral-700/20"
+                      onClick={removeImage}
+                    >
+                      Remove Image
+                    </button>
+                    <button
+                      type="button"
+                      className="hover:underline py-1 px-2 rounded hover:bg-neutral-700/20"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      Change Image
+                    </button>
                   </span>
-                  : "Drag and drop or click to upload"}
+                ) : (
+                  "Drag and drop or click to upload"
+                )}
               </p>
               <input
                 id="avatar"
@@ -130,30 +149,37 @@ function Form({
                 <IoIosInformationCircleOutline className="w-4 h-4" />
                 Upload your photo (JPG or PNG, max size: 500KB).
               </span>
-              
             )}
           </div>
 
           <div>
-            <label className="block text-xl mb-2">Full Name</label>
+            <label className="block text-xl mb-2" htmlFor="name">
+              Full Name
+            </label>
             <input
+              id="name"
               type="text"
+              name="name"
               value={name}
               required
-              onChange={(e) => setName(e.target.value)}
-              className="w-full text-lg bg-neutral-700/20 border border-neutral-500 rounded-lg px-4 py-3 text-neutral-0 placeholder-neutral-500 focus:outline-none  focus:ring-1 focus:ring-offset-1 focus:ring-neutral-500 focus:ring-offset-neutral-500 transition-colors"
+              onChange={handleChange}
+              className={inputClass}
             />
           </div>
 
           <div>
-            <label className="block text-xl mb-2">Email Address</label>
+            <label className="block text-xl mb-2" htmlFor="email">
+              Email Address
+            </label>
             <input
+              id="email"
               type="text"
+              name="email"
               value={email}
               required
               placeholder="example@email.com"
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full text-lg bg-neutral-700/20 border border-neutral-500 rounded-lg px-4 py-3 text-neutral-0 placeholder-neutral-500 focus:outline-none  focus:ring-1 focus:ring-offset-1 focus:ring-neutral-500 focus:ring-offset-neutral-500 transition-colors"
+              onChange={handleChange}
+              className={inputClass}
             />
             {submitted && !isEmailValid && email && (
               <span className="flex text-red-500 text-xs gap-2 items-center mt-3">
@@ -164,14 +190,18 @@ function Form({
           </div>
 
           <div>
-            <label className="block text-xl mb-2">GitHub Username</label>
+            <label className="block text-xl mb-2" htmlFor="git">
+              GitHub Username
+            </label>
             <input
+              id="git"
               type="text"
+              name="git"
               value={git}
               required
               placeholder="@yourusername"
-              onChange={(e) => setGit(e.target.value)}
-              className="w-full text-lg bg-neutral-700/20 border border-neutral-500 rounded-lg px-4 py-3 text-neutral-0 placeholder-neutral-500 focus:outline-none  focus:ring-1 focus:ring-offset-1 focus:ring-neutral-500 focus:ring-offset-neutral-500 transition-colors"
+              onChange={handleChange}
+              className={inputClass}
             />
           </div>
 

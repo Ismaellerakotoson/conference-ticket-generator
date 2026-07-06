@@ -1,28 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import ticketImg from "../assets/images/pattern-ticket.svg";
 import logoMark from "../assets/images/logo-mark.svg";
 import logoFull from "../assets/images/logo-full.svg";
-import iconGitHub from '../assets/images/icon-github.svg'
+import iconGitHub from '../assets/images/icon-github.svg';
+import useObjectUrl from "../hooks/UseObjectUrl";
 
-function Ticket({ name, email, git, image }) {
-  const [imageUrl, setImageUrl] = useState(null);
+function Ticket({ formData }) {
+  const { name, email, git, image } = formData;
+  const imageUrl = useObjectUrl(image);
   const [ticketNumber] = useState(
     () => "#" + String(Math.floor(Math.random() * 90000) + 10000),
   );
-
-  useEffect(() => {
-    if (!image) return;
-    const url = URL.createObjectURL(image);
-    setImageUrl(url);
-    return () => URL.revokeObjectURL(url);
-  }, [image]);
 
   return (
     <div className="flex flex-col items-center text-center  pb-16">
       <img
         src={logoFull}
         alt="Coding Conf"
-        className="w-[165px] w-[26px] sm:w-[170px] mt-2"
+        className="w-[165px] h-[26px] sm:w-[170px] mt-2"
       />
 
       <h1 className="text-3xl sm:text-6xl font-bold mt-10 leading-tight max-w-[700px]">
@@ -71,7 +66,7 @@ function Ticket({ name, email, git, image }) {
           </div>
         </div>
 
-        <div className="block flex items-center absolute right-3 top-1/2 -translate-y-1/2 rotate-90 origin-center text-neutral-400 tracking-[0rem] text-xl sm:text-2xl text-bold  whitespace-nowrap">
+        <div className="block flex items-center absolute right-3 top-1/2 -translate-y-1/2 rotate-90 origin-center text-neutral-400 tracking-[0rem] text-xl sm:text-2xl font-bold  whitespace-nowrap">
           {ticketNumber}
         </div>
       </div>
