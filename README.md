@@ -38,8 +38,8 @@ Users should be able to:
 
 ### Links
 
-- Solution URL: [Add your solution URL here](https://your-solution-url.com)
-- Live Site URL: [Add your live site URL here](https://your-live-site-url.com)
+- Solution URL: [GitHub Repository](https://github.com/Ismaellerakotoson/conference-ticket-generator.git)
+- Live Site URL: [Live Demo](https://ismaellerakotoson.github.io/conference-ticket-generator/)
 
 ## My process
 
